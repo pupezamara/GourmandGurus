@@ -1,0 +1,185 @@
+﻿@page
+@model GourmandGurus.Pages.Recipes.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+
+
+<style>
+    /* Add your custom CSS styles here */
+    .form-row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .input-group {
+        display: flex;
+    }
+
+        .input-group button {
+            margin-left: 10px;
+        }
+
+    .back-link {
+        margin-top: 15px;
+    }
+</style>
+
+<h1>Recipes</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+
+<form method="get" class="form-row">
+    <div class="form-group">
+        <label for="searchTitle">Search by Title:</label>
+        <div class="input-group">
+            <input type="text" id="searchTitle" name="searchTitle" class="form-control" />
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="searchCategory">Filter by Category:</label>
+        <div class="input-group">
+            <select id="searchCategory" name="searchCategory" class="form-control">
+                <option value="">-- Select Category --</option>
+                @foreach (var category in Model.Categories)
+                {
+                    <option value="@category.CategoryName">@category.CategoryName</option>
+                }
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </div>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.SearchTitle) || !string.IsNullOrEmpty(Model.SearchCategory))
+{
+    <div>
+        <a href="javascript:history.back()" class="back-link">Back to Full List</a>
+    </div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Recipe[0].RecipeName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Recipe[0].Ingredients)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Recipe[0].Instructions)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Recipe[0].CookingTime)
+            
+            <th>
+                @Html.DisplayNameFor(model => model.Recipe[0].Cuisine.CuisineName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Recipe[0].Category.CategoryName)
+            </th>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Recipe[0].Vegetarian)
+            </th>
+            
+            <th></th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Recipe)
+        {
+            <tr>
+                <td>
+                    <strong>@Html.DisplayFor(modelItem => item.RecipeName)</strong>
+                </td>
+                <td>
+                    <ul>
+                        @{
+                            var maxIngredients = 3; // Set the maximum number of ingredients to display
+                            var displayedIngredients = 0;
+
+                            foreach (var ingredient in item.Ingredients.Split('\n'))
+                            {
+                                <li>@ingredient</li>
+                                displayedIngredients++;
+
+                                if (displayedIngredients >= maxIngredients)
+                                {
+                                    break; // Break out of the loop when the maximum ingredients are reached
+                                }
+                            }
+                        }
+                    </ul>
+                    @if (displayedIngredients < item.Ingredients.Split('\n').Length)
+                    {
+                        <p><a asp-page="./Details" asp-route-id="@item.ID">View More</a></p>
+                    }
+                </td>
+                <td>
+                    <div>
+                        @{
+                            var maxInstructions = 3; // Set the maximum number of instructions to display
+                            var displayedInstructions = 0;
+
+                            foreach (var instruction in item.Instructions.Split('\n'))
+                            {
+                                <div>@instruction</div>
+                                displayedInstructions++;
+
+                                if (displayedInstructions >= maxInstructions)
+                                {
+                                    break; // Break out of the loop when the maximum instructions are reached
+                                }
+                            }
+                        }
+                    </div>
+                    @if (displayedInstructions < item.Instructions.Split('\n').Length)
+                    {
+                        <p><a asp-page="./Details" asp-route-id="@item.ID">View More</a></p>
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CookingTime)
+                </td>
+
+                
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Cuisine.CuisineName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Vegetarian)
+               </td>
+               
+
+                
+
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+                
+
+            </tr>
+        }
+    </tbody>
+</table>
